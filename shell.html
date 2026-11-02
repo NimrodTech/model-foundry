@@ -1,0 +1,90 @@
+<title>The Model Foundry</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>/*__CSS__*/</style>
+<div class="app show-data">
+  <header class="top">
+    <div class="brand">
+      <p class="eyebrow">Fig. 1 · An end-to-end process drawing</p>
+      <h1>The Model Foundry</h1>
+      <p class="lede">How a trillion-parameter language model gets made, drawn as one factory floor: from raw web pages through a hall of GPUs, human feedback and safety testing, to the chat window and back again.</p>
+    </div>
+    <div class="controls" role="toolbar" aria-label="Map layout, layers and tour">
+      <div class="views">
+        <span class="ctl-label">Layout</span>
+        <button class="layer view-btn" data-view="loop" aria-pressed="true"><i class="vw vw-loop" aria-hidden="true"></i>Compact loop</button>
+        <button class="layer view-btn" data-view="line" aria-pressed="false"><i class="vw vw-line" aria-hidden="true"></i>Straight line</button>
+      </div>
+      <div class="views">
+        <span class="ctl-label">Drawing</span>
+        <button class="layer proj-btn" data-proj="iso" aria-pressed="true"><i class="vw vw-iso" aria-hidden="true"></i>Isometric</button>
+        <button class="layer proj-btn" data-proj="flat" aria-pressed="false"><i class="vw vw-flat" aria-hidden="true"></i>Flat</button>
+      </div>
+      <div class="layers">
+        <span class="ctl-label">Show flows</span>
+        <button class="layer" data-layer="data" aria-pressed="true"><i class="sw sw-data"></i>Data</button>
+        <button class="layer" data-layer="energy" aria-pressed="false"><i class="sw sw-energy"></i>Energy</button>
+        <button class="layer" data-layer="people" aria-pressed="false"><i class="sw sw-people"></i>Human judgement</button>
+        <button class="layer" data-layer="hardware" aria-pressed="false"><i class="sw sw-hardware"></i>Hardware</button>
+        <button class="layer" data-layer="labels" aria-pressed="false"><i class="sw sw-labels"></i>Floating labels</button>
+      </div>
+      <div class="tour">
+        <span class="ctl-label">Tour</span>
+        <button class="layer tmode" data-mode="stations" aria-pressed="true">By station</button>
+        <button class="layer tmode" data-mode="sections" aria-pressed="false">By section</button>
+        <button class="tour-btn" id="tourPrev" aria-label="Previous station">‹</button>
+        <button class="tour-btn play" id="tourPlay"><span class="play-ico" aria-hidden="true"></span><span class="play-txt">Walk the line</span></button>
+        <button class="tour-btn" id="tourNext" aria-label="Next station">›</button>
+      </div>
+      <button class="tour-btn theme-btn" id="themeBtn" aria-label="Switch to light mode"><span class="theme-ico" aria-hidden="true"></span><span class="theme-txt">Light</span></button>
+    </div>
+  </header>
+
+  <section class="stage">
+    <div class="map-wrap" tabindex="0" aria-label="Factory floor. Drag to pan, scroll or pinch to zoom, click a station for details.">
+      <!--__SVG__-->
+      <div class="labels" aria-hidden="false"></div>
+      <div class="corner c-tl">Campus floor · 1 m ≈ 12 units</div>
+      <div class="corner c-tr">Trillion-parameter model, made</div>
+      <div class="corner c-bl">Drag to pan · scroll to zoom · click any station</div>
+      <div class="corner c-br" id="readout">11 stations · 12 parties</div>
+      <div class="zoom">
+        <button id="zIn" aria-label="Zoom in">+</button>
+        <button id="zOut" aria-label="Zoom out">−</button>
+        <button id="zFit" aria-label="Show whole floor">⤢</button>
+      </div>
+      <aside class="panel" id="panel" hidden aria-live="polite"></aside>
+    </div>
+    <div id="panelHost"></div>
+    <nav class="rail" id="rail" aria-label="Stations in order"></nav>
+  </section>
+
+  <section class="below">
+    <div class="col read">
+      <h2>How to read the floor</h2>
+      <p>In the compact loop, the line runs in a snake from the back of the campus to the front. <b>Straight line</b> lays the same eleven stations end to end, with suppliers behind the line and people in front of it. Each station is one main machine with its name painted on the plate; plates are sized by how much time, compute and judgement the step takes. <b>Belts</b> carry the work: raw documents at first, then token shards, then, from the compute hall onward, the model itself as checkpoints. <b>Trays</b> in the floor carry everything else.</p>
+      <ul class="key">
+        <li><i class="sw sw-data"></i><span><b>Data</b>: documents, tokens and model checkpoints moving along the belts. The dashed belt from deployment back to fine-tuning is feedback from real use.</span></li>
+        <li><i class="sw sw-energy"></i><span><b>Energy</b>: power from the utility island, along the floor bus to every station. The heavy feeds go to the compute hall and the inference racks.</span></li>
+        <li><i class="sw sw-people"></i><span><b>Human judgement</b>: every figure on the floor is a person making a call. Green trays bring in annotators, external evaluators and government testers.</span></li>
+        <li><i class="sw sw-hardware"></i><span><b>Hardware</b>: accelerators, memory and servers from the chip supply chain, into the compute hall, the ablation cluster and the inference racks.</span></li>
+      </ul>
+      <p class="note">Scale is compressed. One hall of 180 racks stands for clusters of 16,000 to 200,000+ GPUs, often spread over several buildings. Numbers in the panels are public figures from papers, model cards and reporting. Where a lab hasn't published, the text gives a range or says "estimated".</p>
+    </div>
+    <div class="col parties">
+      <h2>Who's involved</h2>
+      <div class="party-grid" id="partyGrid"></div>
+    </div>
+    <div class="col table">
+      <h2>The line at a glance</h2>
+      <div class="tbl-wrap"><table class="glance" id="glance"><thead><tr><th>#</th><th>Station</th><th>How long</th><th>Where people decide</th></tr></thead><tbody></tbody></table></div>
+      <p class="credit">Drawn with the <a href="https://github.com/wheresryan22/anatomy" target="_blank" rel="noopener">Anatomy</a> isometric kit (MIT).</p>
+    </div>
+  </section>
+</div>
+<script>
+/*__DATA__*/
+/*__RUNTIME__*/
+</script>

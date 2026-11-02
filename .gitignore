@@ -1,0 +1,6 @@
+# local builds: docs/index.html is the page to publish
+model-foundry.html
+preview.html
+# old copies from before this was in git
+*.v[0-9]*.mjs
+*.v[0-9]*.js
