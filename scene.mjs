@@ -708,7 +708,7 @@ IBUILD.gov = (sc, { cx, cy }) => {
   sc.add(cx, cy, -2, st.join("") + box(x0 + 10, y0 + 10, 180, 60, 12, 54, { tone: "mid", bevel: 0.6 }));
   for (let i = 0; i < 6; i++) sc.add(x0 + 18 + i * 33, y0 + 100, 12, cyl(x0 + 18 + i * 33, y0 + 100, 5, 12, 50, { tone: "hi" }));
   sc.add(cx, cy + 10, 62, box(x0, y0, 200, 112, 62, 10, { tone: "hi", bevel: 0.8 }) + box(x0 + 10, y0 + 10, 180, 92, 72, 6, { tone: "mid", bevel: 0.6 }) + line([[x0 + 200, y0 + 6, 67], [x0 + 200, y0 + 106, 67]], { tone: "faint" }));
-  sc.add(cx + 110, cy + 110, 0, cyl(cx + 110, cy + 110, 1.4, 0, 110, { tone: "mid", steps: 10 }) + box(cx + 110, cy + 109.5, 30, 1, 88, 20, { tone: "hi", lit: true, crease: "none" }));
+  sc.add(cx + 110, cy + 110, 0, cyl(cx + 110, cy + 110, 1.4, 0, 110, { tone: "mid", steps: 10 }) + box(cx + 80, cy + 109.5, 30, 1, 88, 20, { tone: "hi", lit: true, crease: "none" }));
 };
 
 // ---------- assemble ----------
@@ -756,7 +756,7 @@ const conduits = [];
 // power: a spine from the utility, three feeders in the gaps between sections, a branch to each plate
 conduits.push(conduit([[1850, 1100], [1700, 1100]], "energy", { heavy: true, party: "power" }));
 conduits.push(conduit([[1700, 410], [1700, 1758]], "energy", { heavy: true, party: "power" }));
-for (const [y, x0] of [[410, 400], [1138, 120], [1758, 120]]) conduits.push(conduit([[1700, y], [x0, y]], "energy", { party: "power" }));
+for (const [y, x0] of [[410, 450], [1138, 420], [1758, 420]]) conduits.push(conduit([[1700, y], [x0, y]], "energy", { party: "power" }));
 for (const [x, y0, y1, heavy] of [[450, 410, 366], [830, 410, 366], [1350, 410, 336], [600, 410, 460], [480, 1138, 976, true], [420, 1138, 1190], [780, 1138, 1190], [1170, 1138, 1190], [1560, 1138, 1190], [420, 1758, 1820, true], [890, 1758, 1820], [1220, 1758, 1820], [1560, 1758, 1820]]) conduits.push(conduit([[x, y0], [x, y1]], "energy", { heavy }));
 conduits.push(conduit([[1850, 436], [860, 436], [860, 460]], "hardware", { heavy: true, party: "chips" }));
 conduits.push(conduit([[1300, 436], [1300, 336]], "hardware"));
@@ -764,7 +764,7 @@ conduits.push(conduit([[1850, 520], [1740, 520], [1740, 1776], [260, 1776], [260
 conduits.push(conduit([[70, 1400], [130, 1400], [130, 1740], [1400, 1740], [1400, 1586]], "people", { party: "annotators" }));
 for (const x of [810, 1150]) conduits.push(conduit([[x, 1740], [x, 1586]], "people"));
 conduits.push(conduit([[1130, 2570], [1130, 2216]], "people", { party: "evaluators" }));
-conduits.push(conduit([[935, 2570], [935, 2100], [920, 2100]], "people", { party: "gov" }));
+conduits.push(conduit([[890, 2700], [935, 2700], [935, 2100], [920, 2100]], "people", { party: "gov" }));
 conduits.push(conduit([[935, 2370], [1060, 2370], [1060, 2216]], "people"));
 
 // belts between zones: none leaves a plate through its front apron
@@ -833,16 +833,16 @@ const lbelts = [];
 const lconduits = [];
 AUD_VIEW = "line";
 {
-  const xa = LX0 + 40, xb = LX("s11") + ZONES.s11.w / 2 + 20;
+  const xa = LX("s01") + 90, xb = LX("s11") + 90;
   const isleFront = BACK + 130 + APRON.island;
   lconduits.push(conduit([[LINE_AT.power[0], isleFront], [LINE_AT.power[0], -220]], "energy", { heavy: true, party: "power" }));
   lconduits.push(conduit([[xa, -220], [xb, -220]], "energy", { heavy: true, party: "power" }));
   for (const id of Object.keys(ZONES)) {
     if (id === "s03") for (const dx of [-200, 200]) lconduits.push(conduit([[LX(id) + dx, -220], [LX(id) + dx, -150]], "energy", { heavy: true }));
-    else lconduits.push(conduit([[LX(id) + 90, -220], [LX(id) + 90, -150]], "energy", { heavy: id === "s11" }));
+    else lconduits.push(conduit([[LX(id) + 90, -220], [LX(id) + 90, linePlan(id).y]], "energy", { heavy: id === "s11" }));
   }
   lconduits.push(conduit([[LINE_AT.chips[0], isleFront], [LINE_AT.chips[0], -150]], "hardware", { heavy: true, party: "chips" }));
-  lconduits.push(conduit([[LX("s02") - 60, -150], [LX("s02") - 60, -300], [LX("s11") - 90, -300], [LX("s11") - 90, -150]], "hardware", { party: "chips" }));
+  lconduits.push(conduit([[LX("s02") - 60, linePlan("s02").y], [LX("s02") - 60, -300], [LX("s11") - 90, -300], [LX("s11") - 90, -150]], "hardware", { party: "chips" }));
   lconduits.push(conduit([[LX("s04") - 200, isleFront], [LX("s04") - 200, -320], [LX("s07") - 90, -320], [LX("s07") - 90, -150]], "people", { party: "annotators" }));
   for (const id of ["s05", "s06"]) lconduits.push(conduit([[LX(id) - 90, -320], [LX(id) - 90, -150]], "people"));
   const front = 150 + APRON.station;

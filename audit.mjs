@@ -37,6 +37,25 @@ for (const view of ["loop", "line"]) {
   const pads = AUDIT.pads.filter((p) => p.view === view);
   const say = (msg) => problems.push(`${view.padEnd(4)}  ${msg}`);
 
+  // conduits: every end lands on a plate or on a conduit of its own kind, and none runs under a plate
+  const conds = AUDIT.conds.filter((c) => c.view === view);
+  const onPlate = ([x, y]) => Object.values(plans).some((p) => x >= p.x - 1 && x <= p.x + p.w + 1 && y >= p.y - 1 && y <= p.y + p.d + 1);
+  const onSeg = ([x, y], a, b) => x >= Math.min(a[0], b[0]) && x <= Math.max(a[0], b[0]) && y >= Math.min(a[1], b[1]) && y <= Math.max(a[1], b[1]);
+  for (const c of conds) {
+    for (const q of [c.points[0], c.points.at(-1)]) {
+      const joins = conds.some((o) => o !== c && o.kind === c.kind && o.points.slice(1).some((b, i) => onSeg(q, o.points[i], b)));
+      if (!onPlate(q) && !joins) say(`${c.kind} conduit ends on nothing at [${q}]`);
+    }
+    c.points.slice(1).forEach((b, i) => {
+      const a = c.points[i];
+      for (const [id, p] of Object.entries(plans)) {
+        const ix = Math.min(Math.max(a[0], b[0]), p.x + p.w) - Math.max(Math.min(a[0], b[0]), p.x);
+        const iy = Math.min(Math.max(a[1], b[1]), p.y + p.d) - Math.max(Math.min(a[1], b[1]), p.y);
+        if (ix >= 0 && iy >= 0 && Math.max(ix, iy) > 1) say(`${c.kind} conduit runs under ${id}: [${a}] to [${b}]`);
+      }
+    });
+  }
+
   // pads: apart from each other, and clear of plates that belong elsewhere
   for (let i = 0; i < pads.length; i++) for (let j = i + 1; j < pads.length; j++) if (hit(pads[i].rect, pads[j].rect, 20)) say(`pads touch: ${pads[i].name} / ${pads[j].name}`);
   for (const p of pads) for (const [id, pl] of Object.entries(plans)) if (!p.ids.includes(id) && hit(p.rect, pl, 20)) say(`pad ${p.name} runs into plate ${id}`);
